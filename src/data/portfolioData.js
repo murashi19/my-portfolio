@@ -20,7 +20,7 @@ export const personal = {
   linkedin: "https://linkedin.com/", // TODO: replace with real LinkedIn URL
   instagram: "#", // TODO: add real handle
   whatsapp: "https://wa.me/6282134716388",
-  resumeFile: "/resume-rafli-shidiq.pdf", // TODO: drop the real CV PDF into /public
+  resumeFile: "/public/CV_Muhamad_Rafli_Shidiq_.pdf", // TODO: drop the real CV PDF into /public
   avatar: "/public/fotoku.png", // TODO: add a profile photo to /public and reference it here
   summary:
     "Full Stack Developer with hands-on experience building end-to-end web applications using Laravel, React.js, PHP, Go, JavaScript, MySQL, and PostgreSQL. I've shipped a training-institution management system and sharpened my IT fundamentals through an internship at PT PLN (Persero). My focus areas are REST API design, frontend–backend integration, responsive interfaces, and database architecture — and I'm currently deepening my DevOps skillset at Koda Academy's Full Stack Developer Bootcamp, working daily with Docker, GitHub Actions CI/CD, Linux, Nginx, and SSH.",
