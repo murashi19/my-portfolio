@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
-import { ArrowDown, Download, Mail } from "lucide-react";
+import { ArrowDown, Download, Mail, MapPin } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { personal } from "../data/portfolioData";
 
@@ -49,7 +49,7 @@ export default function Hero() {
             className="font-mono text-sm text-secondary mb-4 flex items-center gap-2"
           >
             <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-            Available for new opportunities
+            Open to full-time opportunities
           </motion.p>
 
           <motion.h1
@@ -92,9 +92,17 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-6 text-text-muted text-lg max-w-xl leading-relaxed"
           >
-            I build end-to-end web applications with React, Go, and Laravel —
-            from REST APIs to responsive interfaces — and I'm currently
-            sharpening my DevOps toolkit at a full-stack bootcamp in Depok.
+            I build dependable web products from responsive React interfaces
+            and REST APIs to databases, containers, and deployment workflows.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="mt-4 flex items-center gap-2 text-sm text-text-muted"
+          >
+            <MapPin size={15} className="text-secondary" /> {personal.location}
           </motion.p>
 
           <motion.div

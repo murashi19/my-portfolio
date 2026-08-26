@@ -51,25 +51,17 @@ export default function Skills() {
         >
           {skills[active].map((skill, i) => (
             <motion.div
-              key={skill.name}
+              key={skill}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06, duration: 0.4 }}
               whileHover={{ y: -4 }}
               className="glass rounded-2xl p-5 hover:border-secondary/30 transition-colors"
             >
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-sm">{skill.name}</span>
-                <span className="font-mono text-xs text-text-muted">{skill.level}%</span>
-              </div>
-              <div className="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${skill.level}%` }}
-                  transition={{ duration: 0.9, delay: 0.1 + i * 0.06, ease: "easeOut" }}
-                  className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
-                />
-              </div>
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 font-mono text-xs text-primary">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="mt-4 font-display font-semibold">{skill}</p>
             </motion.div>
           ))}
         </motion.div>

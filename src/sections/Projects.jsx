@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, ImageOff } from "lucide-react";
+import { ExternalLink, Layers3 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { projects } from "../data/portfolioData";
 import Reveal from "../components/Reveal";
@@ -41,9 +41,14 @@ function ProjectCard({ project, index }) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="flex flex-col items-center gap-2 text-text-muted">
-              <ImageOff size={28} strokeWidth={1.2} />
-              <span className="text-xs font-mono">screenshot placeholder</span>
+            <div className="project-cover relative h-full w-full grid place-items-center overflow-hidden">
+              <div className="absolute inset-0 grid-bg opacity-60" />
+              <div className="relative flex flex-col items-center gap-3 text-white/80">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
+                  <Layers3 size={27} strokeWidth={1.4} />
+                </span>
+                <span className="font-display text-sm font-semibold">{project.title}</span>
+              </div>
             </div>
           )}
         </div>
@@ -76,22 +81,25 @@ function ProjectCard({ project, index }) {
           </div>
 
           <div className="mt-5 flex gap-3 pt-4 border-t border-white/5">
-            <a
+            {project.github && <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
             >
-              <FaGithub size={15} /> Code
-            </a>
-            <a
+              <FaGithub size={15} /> View Code
+            </a>}
+            {project.demo && <a
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
             >
               <ExternalLink size={15} /> Live Demo
-            </a>
+            </a>}
+            {!project.github && !project.demo && (
+              <span className="text-xs text-text-muted/70">Private / internal project</span>
+            )}
           </div>
         </div>
       </div>

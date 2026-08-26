@@ -74,7 +74,6 @@ function ParticleShell() {
 }
 
 function Rig() {
-  const { current } = useRef({ x: 0, y: 0 });
   useFrame((state) => {
     const target = new THREE.Vector3(
       (state.mouse.x * Math.PI) / 40,

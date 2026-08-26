@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
-export function useActiveSection(ids, options = { rootMargin: "-45% 0px -45% 0px" }) {
+const observerOptions = { rootMargin: "-45% 0px -45% 0px" };
+
+export function useActiveSection(ids, options = observerOptions) {
   const [active, setActive] = useState(ids[0]);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export function useActiveSection(ids, options = { rootMargin: "-45% 0px -45% 0px
 
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [ids]);
+  }, [ids, options]);
 
   return active;
 }

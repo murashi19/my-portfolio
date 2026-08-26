@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { personal, quickFacts } from "../data/portfolioData";
-import Reveal, { Stagger, staggerItem } from "../components/Reveal";
+import Reveal, { Stagger } from "../components/Reveal";
+import { staggerItem } from "../components/motionVariants";
 
 export default function About() {
   return (
@@ -15,6 +16,10 @@ export default function About() {
                 <img
                   src={personal.avatar}
                   alt={personal.name}
+                  width="720"
+                  height="1059"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               ) : (

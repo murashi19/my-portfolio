@@ -2,21 +2,19 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import { Mail, Send, CheckCircle2, XCircle } from "lucide-react";
-import { FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 import { personal } from "../data/portfolioData";
 import Reveal from "../components/Reveal";
 
-// TODO: create a free account at emailjs.com and drop your own
-// service/template/public keys here (or in a .env file) before
-// the form can actually send email.
-const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+// EmailJS is optional. Without environment keys, the form opens the
+// visitor's email client with all fields pre-filled.
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 const socials = [
   { icon: FaGithub, href: personal.github, label: "GitHub" },
   { icon: FaLinkedin, href: personal.linkedin, label: "LinkedIn" },
-  { icon: FaInstagram, href: personal.instagram, label: "Instagram" },
   { icon: FaWhatsapp, href: personal.whatsapp, label: "WhatsApp" },
   { icon: Mail, href: `mailto:${personal.email}`, label: "Email" },
 ];
@@ -48,8 +46,15 @@ export default function Contact() {
 
     setStatus("sending");
     try {
-      if (EMAILJS_SERVICE_ID.startsWith("YOUR_")) {
-        throw new Error("EmailJS is not configured yet.");
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        const subject = encodeURIComponent(form.subject);
+        const body = encodeURIComponent(
+          `${form.message}\n\nFrom: ${form.name} (${form.email})`
+        );
+        window.location.href = `mailto:${personal.email}?subject=${subject}&body=${body}`;
+        setStatus("success");
+        showToast("success", "Your email app is ready with the message.");
+        return;
       }
       await emailjs.send(
         EMAILJS_SERVICE_ID,
@@ -65,7 +70,7 @@ export default function Contact() {
       setStatus("success");
       showToast("success", "Message sent — thanks for reaching out!");
       setForm({ name: "", email: "", subject: "", message: "" });
-    } catch (err) {
+    } catch {
       setStatus("error");
       showToast(
         "error",
@@ -132,6 +137,9 @@ export default function Contact() {
                 <div>
                   <label className="text-xs font-mono text-text-muted">Name</label>
                   <input
+                    type="text"
+                    name="name"
+                    autoComplete="name"
                     className={`mt-1.5 ${inputClass("name")}`}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -142,6 +150,9 @@ export default function Contact() {
                 <div>
                   <label className="text-xs font-mono text-text-muted">Email</label>
                   <input
+                    type="email"
+                    name="email"
+                    autoComplete="email"
                     className={`mt-1.5 ${inputClass("email")}`}
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -153,6 +164,8 @@ export default function Contact() {
               <div>
                 <label className="text-xs font-mono text-text-muted">Subject</label>
                 <input
+                  type="text"
+                  name="subject"
                   className={`mt-1.5 ${inputClass("subject")}`}
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
@@ -163,6 +176,7 @@ export default function Contact() {
               <div>
                 <label className="text-xs font-mono text-text-muted">Message</label>
                 <textarea
+                  name="message"
                   rows={5}
                   className={`mt-1.5 resize-none ${inputClass("message")}`}
                   value={form.message}

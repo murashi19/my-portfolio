@@ -15,6 +15,7 @@ import {
   SiBootstrap,
   SiVite,
   SiFigma,
+  SiExpress,
 } from "react-icons/si";
 import { techStack } from "../data/portfolioData";
 import Reveal from "../components/Reveal";
@@ -25,6 +26,7 @@ import Reveal from "../components/Reveal";
 const techMeta = {
   React: { icon: SiReact, color: "#61DAFB" },
   Go: { icon: SiGo, color: "#00ADD8" },
+  "Express.js": { icon: SiExpress, color: "#ffffff" },
   Laravel: { icon: SiLaravel, color: "#FF2D20" },
   PHP: { icon: SiPhp, color: "#777BB4" },
   JavaScript: { icon: SiJavascript, color: "#F7DF1E" },

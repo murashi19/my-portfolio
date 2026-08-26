@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { GraduationCap, Award } from "lucide-react";
 import { education, certificates, languages } from "../data/portfolioData";
-import Reveal, { Stagger, staggerItem } from "../components/Reveal";
+import Reveal, { Stagger } from "../components/Reveal";
+import { staggerItem } from "../components/motionVariants";
 
 export default function Education() {
   return (

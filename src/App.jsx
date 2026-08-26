@@ -28,6 +28,8 @@ export default function App() {
         />
         <meta property="og:title" content={`${personal.name} — Full Stack Developer`} />
         <meta property="og:description" content={personal.objective} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={personal.avatar} />
         <meta name="theme-color" content="#030712" />
       </Helmet>
 
