@@ -6,13 +6,13 @@ import { staggerItem } from "../components/motionVariants";
 
 export default function Education() {
   return (
-    <section id="education" className="relative py-28 px-6">
+    <section id="education" className="section-shell relative py-28 px-6">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-16">
         <div className="lg:col-span-3">
           <Reveal>
-            <p className="font-mono text-sm text-secondary mb-3">05 · Education</p>
-            <h2 className="font-display text-4xl font-bold tracking-tight">
-              Academic <span className="text-gradient">background</span>
+            <p className="section-kicker">05 / Education</p>
+            <h2 className="section-title mt-3">
+              Learning through <span className="text-gradient">building.</span>
             </h2>
           </Reveal>
 
@@ -24,14 +24,14 @@ export default function Education() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="glass rounded-2xl p-6 hover:border-secondary/30 transition-colors"
+                className="group rounded-2xl border border-white/10 bg-[#070d18] p-6 transition-colors hover:border-secondary/30"
               >
                 <div className="flex items-start gap-4">
                   <div className="h-10 w-10 shrink-0 rounded-xl bg-secondary/10 grid place-items-center text-secondary">
                     <GraduationCap size={20} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-mono text-xs text-secondary">{edu.duration}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-secondary">{edu.duration}</p>
                     <h3 className="font-display font-semibold text-lg mt-1">{edu.degree}</h3>
                     <p className="text-text-muted text-sm">
                       {edu.school} · {edu.location}
@@ -50,7 +50,7 @@ export default function Education() {
             ))}
           </div>
 
-          <Reveal delay={0.2} className="mt-6 glass rounded-2xl p-6">
+          <Reveal delay={0.2} className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
             <p className="font-mono text-xs text-secondary uppercase tracking-wider">Languages</p>
             <div className="mt-3 flex flex-wrap gap-3">
               {languages.map((l) => (
@@ -64,9 +64,9 @@ export default function Education() {
 
         <div id="certificates" className="lg:col-span-2">
           <Reveal>
-            <p className="font-mono text-sm text-secondary mb-3">06 · Certificates</p>
-            <h2 className="font-display text-4xl font-bold tracking-tight">
-              Credentials <span className="text-gradient">earned</span>
+            <p className="section-kicker">06 / Credentials</p>
+            <h2 className="section-title mt-3">
+              Verified <span className="text-gradient">foundations.</span>
             </h2>
           </Reveal>
 
@@ -76,7 +76,7 @@ export default function Education() {
                 key={cert.title}
                 variants={staggerItem}
                 whileHover={{ y: -3 }}
-                className="glass rounded-2xl p-5 flex items-center gap-4 hover:border-accent/30 transition-colors"
+                className="rounded-2xl border border-white/10 bg-[#070d18] p-5 flex items-center gap-4 hover:border-accent/30 transition-colors"
               >
                 <div className="h-11 w-11 shrink-0 rounded-xl bg-accent/10 grid place-items-center text-accent">
                   <Award size={20} />

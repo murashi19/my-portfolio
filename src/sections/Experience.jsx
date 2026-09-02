@@ -1,75 +1,30 @@
 import { motion } from "framer-motion";
-import { Briefcase, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { experience } from "../data/portfolioData";
 import Reveal from "../components/Reveal";
 
 export default function Experience() {
   return (
-    <section id="experience" className="relative py-28 px-6">
-      <div className="max-w-4xl mx-auto">
-        <Reveal className="text-center max-w-2xl mx-auto">
-          <p className="font-mono text-sm text-secondary mb-3">03 · Experience</p>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
-            Where I've <span className="text-gradient">built things</span>
-          </h2>
+    <section id="experience" className="relative px-6 py-28">
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="grid gap-6 md:grid-cols-[0.7fr_1fr]">
+          <div><p className="section-kicker">03 / Experience</p><h2 className="section-title mt-3">Work that built my <span className="text-gradient">foundation.</span></h2></div>
+          <p className="max-w-xl self-end text-sm leading-7 text-text-muted md:justify-self-end">Product development, independent delivery, and infrastructure support across education and enterprise environments.</p>
         </Reveal>
 
-        <div className="relative mt-16">
-          <div className="absolute left-[15px] sm:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary via-secondary to-accent/40 sm:-translate-x-1/2" />
-
-          <div className="space-y-12">
-            {experience.map((job, i) => (
-              <div key={job.company} className="relative sm:grid sm:grid-cols-2 sm:gap-10">
-                <span
-                  className="absolute left-0 sm:left-1/2 top-1.5 h-3.5 w-3.5 rounded-full bg-primary ring-4 ring-bg sm:-translate-x-1/2 z-10"
-                />
-                <div className={i % 2 === 0 ? "sm:col-start-1" : "sm:col-start-2"} />
-
-                <motion.div
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className={`pl-10 sm:pl-0 ${
-                    i % 2 === 0 ? "sm:col-start-2" : "sm:col-start-1 sm:row-start-1"
-                  }`}
-                >
-                  <div className="glass rounded-2xl p-6 hover:border-primary/30 transition-colors">
-                    <p className="font-mono text-xs text-secondary">{job.duration}</p>
-                    <h3 className="font-display font-semibold text-lg mt-1.5 flex items-center gap-2">
-                      <Briefcase size={16} className="text-primary shrink-0" />
-                      {job.role}
-                    </h3>
-                    <p className="text-text-muted text-sm mt-1">{job.company}</p>
-                    <p className="text-text-muted text-xs mt-1 flex items-center gap-1.5">
-                      <MapPin size={12} /> {job.location}
-                    </p>
-                    <p className="mt-4 text-sm text-text-muted leading-relaxed">
-                      {job.description}
-                    </p>
-                    <ul className="mt-4 space-y-2">
-                      {job.points.map((point) => (
-                        <li key={point} className="text-sm text-text-muted flex gap-2">
-                          <span className="text-primary mt-1.5">▸</span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {job.tech.map((t) => (
-                        <span
-                          key={t}
-                          className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/5 text-text-muted"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
+        <div className="mt-14 border-t border-white/10">
+          {experience.map((job, index) => (
+            <motion.article key={job.company} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.18 }} transition={{ duration: 0.55, delay: index * 0.06 }} className="experience-row group grid gap-6 border-b border-white/10 py-9 md:grid-cols-[180px_1fr_44px] md:gap-10">
+              <div><p className="font-mono text-[11px] uppercase tracking-wider text-secondary">{job.duration}</p><p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted"><MapPin size={12} /> {job.location}</p></div>
+              <div>
+                <h3 className="font-display text-xl font-semibold text-white">{job.role}</h3><p className="mt-1 text-sm text-text-muted">{job.company}</p>
+                <p className="mt-5 max-w-3xl text-sm leading-7 text-text-muted">{job.description}</p>
+                <ul className="mt-5 grid gap-2.5">{job.points.slice(0, 3).map((point) => <li key={point} className="flex gap-3 text-sm leading-6 text-text-muted"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-secondary" />{point}</li>)}</ul>
+                <div className="mt-6 flex flex-wrap gap-2">{job.tech.map((tech) => <span key={tech} className="font-mono text-[10px] text-text-muted/70">#{tech.replaceAll(" ", "-")}</span>)}</div>
               </div>
-            ))}
-          </div>
+              <span className="hidden h-11 w-11 place-items-center rounded-full border border-white/10 text-text-muted transition-all group-hover:border-primary/40 group-hover:bg-primary/10 group-hover:text-primary md:grid"><ArrowUpRight size={17} /></span>
+            </motion.article>
+          ))}
         </div>
       </div>
     </section>

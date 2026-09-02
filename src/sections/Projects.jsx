@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Layers3 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
@@ -6,39 +6,29 @@ import { projects } from "../data/portfolioData";
 import Reveal from "../components/Reveal";
 
 function ProjectCard({ project, index }) {
-  const cardRef = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: py * -6, y: px * 8 });
-  };
-
   return (
     <motion.div
-      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-      style={{ transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-      className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-primary/40 via-white/5 to-accent/40 transition-transform duration-200 ease-out"
+      className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-[#070d18] transition-colors hover:border-primary/30 ${index === 0 ? "lg:col-span-2 lg:grid lg:grid-cols-2" : ""}`}
     >
-      <div className="relative rounded-2xl glass overflow-hidden h-full flex flex-col">
+      <div className="relative contents">
         <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="aspect-video bg-white/5 grid place-items-center overflow-hidden">
+        <div
+          className={`bg-white/5 grid place-items-center overflow-hidden ${index === 0 ? "min-h-64 lg:min-h-full" : "aspect-video"}`}
+        >
           {project.image ? (
             <img
               src={project.image}
               alt={project.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              width="1600"
+              height="900"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
             />
           ) : (
             <div className="project-cover relative h-full w-full grid place-items-center overflow-hidden">
@@ -47,15 +37,24 @@ function ProjectCard({ project, index }) {
                 <span className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
                   <Layers3 size={27} strokeWidth={1.4} />
                 </span>
-                <span className="font-display text-sm font-semibold">{project.title}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
+                  Project / 0{index + 1}
+                </span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="p-6 flex flex-col flex-1">
+        <div className="p-6 sm:p-8 flex flex-col flex-1">
           <p className="text-xs font-mono text-secondary">{project.subtitle}</p>
-          <h3 className="font-display font-semibold text-lg mt-1.5">{project.title}</h3>
+          <div className="flex items-start justify-between gap-4">
+            <h3 className="font-display font-semibold text-xl mt-1.5">
+              {project.title}
+            </h3>
+            <span className="font-mono text-xs text-text-muted/40">
+              0{index + 1}
+            </span>
+          </div>
           <p className="mt-3 text-sm text-text-muted leading-relaxed flex-1">
             {project.description}
           </p>
@@ -81,24 +80,30 @@ function ProjectCard({ project, index }) {
           </div>
 
           <div className="mt-5 flex gap-3 pt-4 border-t border-white/5">
-            {project.github && <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
-            >
-              <FaGithub size={15} /> View Code
-            </a>}
-            {project.demo && <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
-            >
-              <ExternalLink size={15} /> Live Demo
-            </a>}
+            {project.github && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
+              >
+                <FaGithub size={15} /> View Code
+              </a>
+            )}
+            {project.demo && (
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
+              >
+                <ExternalLink size={15} /> Live Demo
+              </a>
+            )}
             {!project.github && !project.demo && (
-              <span className="text-xs text-text-muted/70">Private / internal project</span>
+              <span className="text-xs text-text-muted/70">
+                Private / internal project
+              </span>
             )}
           </div>
         </div>
@@ -110,36 +115,50 @@ function ProjectCard({ project, index }) {
 export default function Projects() {
   const [filter, setFilter] = useState("All");
 
-  const allTech = useMemo(() => {
-    const set = new Set();
-    projects.forEach((p) => p.tech.forEach((t) => set.add(t)));
-    return ["All", ...Array.from(set)];
-  }, []);
+  const allTech = [
+    "All",
+    "React.js",
+    "Next.js",
+    "Express.js",
+    "Go",
+    "Laravel",
+    "PostgreSQL",
+  ];
 
   const filtered = useMemo(
-    () => (filter === "All" ? projects : projects.filter((p) => p.tech.includes(filter))),
-    [filter]
+    () =>
+      filter === "All"
+        ? projects
+        : projects.filter((p) => p.tech.includes(filter)),
+    [filter],
   );
 
   return (
     <section id="projects" className="relative py-28 px-6 bg-bg-elevated/40">
       <div className="max-w-6xl mx-auto">
-        <Reveal className="text-center max-w-2xl mx-auto">
-          <p className="font-mono text-sm text-secondary mb-3">04 · Projects</p>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
-            Things I've <span className="text-gradient">shipped</span>
-          </h2>
+        <Reveal className="grid gap-6 md:grid-cols-[1fr_0.7fr] md:items-end">
+          <div>
+            <p className="section-kicker">04 / Selected work</p>
+            <h2 className="section-title mt-3">
+              Products, systems, and{" "}
+              <span className="text-gradient">real outcomes.</span>
+            </h2>
+          </div>
+          <p className="max-w-lg text-sm leading-7 text-text-muted md:justify-self-end">
+            A selection of full-stack work across commerce, education, and
+            enterprise asset operations.
+          </p>
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-10 flex flex-wrap justify-center gap-2">
+        <Reveal delay={0.1} className="mt-10 flex flex-wrap gap-2">
           {allTech.map((t) => (
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`px-4 py-2 rounded-full text-xs font-mono transition-colors ${
+              className={`px-4 py-2 rounded-lg border text-xs font-mono transition-colors ${
                 filter === t
-                  ? "bg-primary text-white"
-                  : "glass text-text-muted hover:text-text"
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-white/8 bg-white/2.5 text-text-muted hover:text-text"
               }`}
             >
               {t}
@@ -147,7 +166,7 @@ export default function Projects() {
           ))}
         </Reveal>
 
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-8 grid sm:grid-cols-2 gap-6">
           {filtered.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} />
           ))}

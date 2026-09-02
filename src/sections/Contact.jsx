@@ -20,7 +20,12 @@ const socials = [
 ];
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [toast, setToast] = useState(null);
@@ -28,9 +33,11 @@ export default function Contact() {
   const validate = () => {
     const next = {};
     if (!form.name.trim()) next.name = "Please enter your name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      next.email = "Enter a valid email address.";
     if (!form.subject.trim()) next.subject = "Please add a subject.";
-    if (form.message.trim().length < 10) next.message = "Message should be at least 10 characters.";
+    if (form.message.trim().length < 10)
+      next.message = "Message should be at least 10 characters.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -49,7 +56,7 @@ export default function Contact() {
       if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
         const subject = encodeURIComponent(form.subject);
         const body = encodeURIComponent(
-          `${form.message}\n\nFrom: ${form.name} (${form.email})`
+          `${form.message}\n\nFrom: ${form.name} (${form.email})`,
         );
         window.location.href = `mailto:${personal.email}?subject=${subject}&body=${body}`;
         setStatus("success");
@@ -65,7 +72,7 @@ export default function Contact() {
           subject: form.subject,
           message: form.message,
         },
-        EMAILJS_PUBLIC_KEY
+        EMAILJS_PUBLIC_KEY,
       );
       setStatus("success");
       showToast("success", "Message sent — thanks for reaching out!");
@@ -74,7 +81,7 @@ export default function Contact() {
       setStatus("error");
       showToast(
         "error",
-        "Couldn't send right now — email me directly instead."
+        "Couldn't send right now — email me directly instead.",
       );
     } finally {
       setTimeout(() => setStatus("idle"), 2000);
@@ -83,36 +90,60 @@ export default function Contact() {
 
   const inputClass = (field) =>
     `w-full rounded-xl bg-white/5 border px-4 py-3 text-sm placeholder:text-text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors ${
-      errors[field] ? "border-red-500/60" : "border-white/10 focus:border-primary/40"
+      errors[field]
+        ? "border-red-500/60"
+        : "border-white/10 focus:border-primary/40"
     }`;
 
   return (
     <section id="contact" className="relative py-28 px-6">
-      <div className="max-w-5xl mx-auto">
-        <Reveal className="text-center max-w-2xl mx-auto">
-          <p className="font-mono text-sm text-secondary mb-3">07 · Contact</p>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
-            Let's <span className="text-gradient">build something</span>
-          </h2>
-          <p className="mt-4 text-text-muted">
-            Have a role, project, or question in mind? My inbox is open.
+      <div className="max-w-6xl mx-auto">
+        <Reveal className="grid gap-6 md:grid-cols-[1fr_0.7fr] md:items-end">
+          <div>
+            <p className="section-kicker">07 / Contact</p>
+            <h2 className="section-title mt-3">
+              Have a problem worth{" "}
+              <span className="text-gradient">solving?</span>
+            </h2>
+          </div>
+          <p className="max-w-md text-sm leading-7 text-text-muted md:justify-self-end">
+            I'm open to full-time roles and thoughtful collaborations. Tell me
+            what you're building and where I can help.
           </p>
         </Reveal>
 
-        <div className="mt-14 grid lg:grid-cols-5 gap-10">
-          <Reveal delay={0.1} className="lg:col-span-2 space-y-6">
-            <div className="glass rounded-2xl p-6">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">Email</p>
-              <a href={`mailto:${personal.email}`} className="mt-2 block text-sm hover:text-primary transition-colors">
+        <div className="mt-14 grid overflow-hidden rounded-3xl border border-white/10 bg-[#070d18] lg:grid-cols-5">
+          <Reveal
+            delay={0.1}
+            className="relative lg:col-span-2 space-y-4 border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r"
+          >
+            <div className="mb-8">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/8 px-3 py-1.5 font-mono text-[10px] text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{" "}
+                Available for opportunities
+              </span>
+            </div>
+            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
+              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
+                Email
+              </p>
+              <a
+                href={`mailto:${personal.email}`}
+                className="mt-2 block text-sm hover:text-primary transition-colors"
+              >
                 {personal.email}
               </a>
             </div>
-            <div className="glass rounded-2xl p-6">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">Phone</p>
+            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
+              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
+                Phone
+              </p>
               <p className="mt-2 text-sm">{personal.phone}</p>
             </div>
-            <div className="glass rounded-2xl p-6">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">Location</p>
+            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
+              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
+                Location
+              </p>
               <p className="mt-2 text-sm">{personal.location}</p>
             </div>
             <div className="flex gap-3">
@@ -123,7 +154,7 @@ export default function Contact() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="h-11 w-11 grid place-items-center rounded-xl glass text-text-muted hover:text-primary hover:border-primary/40 transition-colors"
+                  className="h-11 w-11 grid place-items-center rounded-xl border border-white/10 bg-white/2.5 text-text-muted hover:text-primary hover:border-primary/40 transition-colors"
                 >
                   <Icon size={17} />
                 </a>
@@ -132,10 +163,16 @@ export default function Contact() {
           </Reveal>
 
           <Reveal delay={0.2} className="lg:col-span-3">
-            <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 sm:p-8 space-y-5" noValidate>
+            <form
+              onSubmit={handleSubmit}
+              className="p-6 sm:p-10 space-y-5"
+              noValidate
+            >
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs font-mono text-text-muted">Name</label>
+                  <label className="text-xs font-mono text-text-muted">
+                    Name
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -145,45 +182,65 @@ export default function Contact() {
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Your name"
                   />
-                  {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
+                  {errors.name && (
+                    <p className="mt-1 text-xs text-red-400">{errors.name}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="text-xs font-mono text-text-muted">Email</label>
+                  <label className="text-xs font-mono text-text-muted">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
                     autoComplete="email"
                     className={`mt-1.5 ${inputClass("email")}`}
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                     placeholder="you@example.com"
                   />
-                  {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="mt-1 text-xs text-red-400">{errors.email}</p>
+                  )}
                 </div>
               </div>
               <div>
-                <label className="text-xs font-mono text-text-muted">Subject</label>
+                <label className="text-xs font-mono text-text-muted">
+                  Subject
+                </label>
                 <input
                   type="text"
                   name="subject"
                   className={`mt-1.5 ${inputClass("subject")}`}
                   value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, subject: e.target.value })
+                  }
                   placeholder="What's this about?"
                 />
-                {errors.subject && <p className="mt-1 text-xs text-red-400">{errors.subject}</p>}
+                {errors.subject && (
+                  <p className="mt-1 text-xs text-red-400">{errors.subject}</p>
+                )}
               </div>
               <div>
-                <label className="text-xs font-mono text-text-muted">Message</label>
+                <label className="text-xs font-mono text-text-muted">
+                  Message
+                </label>
                 <textarea
                   name="message"
                   rows={5}
                   className={`mt-1.5 resize-none ${inputClass("message")}`}
                   value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, message: e.target.value })
+                  }
                   placeholder="Tell me a bit about the opportunity or project…"
                 />
-                {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
+                {errors.message && (
+                  <p className="mt-1 text-xs text-red-400">{errors.message}</p>
+                )}
               </div>
               <button
                 type="submit"

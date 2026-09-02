@@ -28,8 +28,8 @@ export default function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-6">
         <div
-          className={`flex items-center justify-between rounded-2xl px-5 transition-all duration-500 ${
-            scrolled ? "glass py-2.5 shadow-lg shadow-black/20" : "py-1"
+          className={`flex items-center justify-between rounded-full px-4 transition-all duration-500 ${
+            scrolled ? "border border-white/10 bg-[#060c16]/85 py-2 shadow-xl shadow-black/30 backdrop-blur-xl" : "py-1"
           }`}
         >
           <a
@@ -38,9 +38,10 @@ export default function Navbar() {
               e.preventDefault();
               handleClick("#hero");
             }}
-            className="font-display text-lg font-bold tracking-tight"
+            className="flex items-center gap-2 font-display text-sm font-bold tracking-tight"
           >
-            Murashi<span className="text-gradient">.dev</span>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-xs text-bg">MR</span>
+            <span>Murashi<span className="text-gradient">.dev</span></span>
           </a>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -57,7 +58,7 @@ export default function Navbar() {
                 {active === link.href && (
                   <motion.span
                     layoutId="nav-active"
-                    className="absolute inset-0 rounded-full glass"
+                    className="absolute inset-0 rounded-full bg-white/[0.07]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -71,7 +72,7 @@ export default function Navbar() {
           <a
             href={personal.resumeFile}
             download
-            className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-2 text-sm font-medium text-primary hover:bg-primary hover:text-white transition-colors"
+            className="hidden md:inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-bg hover:bg-secondary transition-colors"
           >
             <Download size={15} /> Resume
           </a>

@@ -30,10 +30,9 @@ export default function Stats() {
 
   return (
     <section ref={ref} className="relative py-24 px-6">
-      <div className="max-w-6xl mx-auto glass rounded-3xl p-10 sm:p-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10 relative overflow-hidden">
-        <div className="aurora opacity-60" />
+      <div className="max-w-6xl mx-auto rounded-3xl border border-white/10 bg-[#070d18] p-8 sm:p-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-px relative overflow-hidden">
         {stats.map((stat, i) => (
-          <Reveal key={stat.label} delay={i * 0.08} className="relative z-10 text-center sm:text-left">
+          <Reveal key={stat.label} delay={i * 0.08} className="relative z-10 border-white/10 px-5 py-4 text-left lg:not-last:border-r">
             <StatNumber value={stat.value} suffix={stat.suffix} inView={inView} />
             <p className="mt-2 text-sm text-text-muted">{stat.label}</p>
           </Reveal>
