@@ -1,95 +1,59 @@
-import { motion } from "framer-motion";
-import { GraduationCap, Award } from "lucide-react";
+import Section from "../components/Section";
 import { education, certificates, languages } from "../data/portfolioData";
-import Reveal, { Stagger } from "../components/Reveal";
-import { staggerItem } from "../components/motionVariants";
 
 export default function Education() {
   return (
-    <section id="education" className="section-shell relative py-28 px-6">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-16">
-        <div className="lg:col-span-3">
-          <Reveal>
-            <p className="section-kicker">05 / Education</p>
-            <h2 className="section-title mt-3">
-              Learning through <span className="text-gradient">building.</span>
-            </h2>
-          </Reveal>
+    <Section id="education" index="05" label="Education" title="Where I studied">
+      <div className="space-y-14">
+        <ol className="border-t border-border">
+          {education.map((edu) => (
+            <li
+              key={edu.school}
+              className="grid gap-x-14 gap-y-3 border-b border-border py-7 sm:grid-cols-[10rem_1fr]"
+            >
+              <div className="tnum font-mono text-xs text-faint sm:pt-1">
+                <p>{edu.duration}</p>
+                <p className="mt-1">{edu.location}</p>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold tracking-tight">{edu.degree}</h3>
+                <p className="mt-0.5 text-sm text-muted">{edu.school}</p>
+                <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted">
+                  {edu.note}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
 
-          <div className="mt-10 space-y-6">
-            {education.map((edu, i) => (
-              <motion.div
-                key={edu.school}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="group rounded-2xl border border-white/10 bg-[#070d18] p-6 transition-colors hover:border-secondary/30"
+        <div className="grid gap-x-14 gap-y-5 sm:grid-cols-[10rem_1fr]">
+          <h3 className="font-mono text-xs uppercase tracking-[0.12em] text-faint">
+            Certificates
+          </h3>
+          <ul className="border-t border-border">
+            {certificates.map((cert) => (
+              <li
+                key={cert.title}
+                className="row-line flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-border py-3.5 text-sm"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 shrink-0 rounded-xl bg-secondary/10 grid place-items-center text-secondary">
-                    <GraduationCap size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-secondary">{edu.duration}</p>
-                    <h3 className="font-display font-semibold text-lg mt-1">{edu.degree}</h3>
-                    <p className="text-text-muted text-sm">
-                      {edu.school} · {edu.location}
-                    </p>
-                    <ul className="mt-3 space-y-1.5">
-                      {edu.details.map((d) => (
-                        <li key={d} className="text-sm text-text-muted flex gap-2">
-                          <span className="text-secondary mt-1.5">▸</span>
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <Reveal delay={0.2} className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-            <p className="font-mono text-xs text-secondary uppercase tracking-wider">Languages</p>
-            <div className="mt-3 flex flex-wrap gap-3">
-              {languages.map((l) => (
-                <span key={l.name} className="text-sm text-text-muted">
-                  {l.name} <span className="text-text-muted/60">· {l.level}</span>
+                <span>{cert.title}</span>
+                <span className="tnum font-mono text-xs text-faint">
+                  {cert.issuer} · {cert.year}
                 </span>
-              ))}
-            </div>
-          </Reveal>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div id="certificates" className="lg:col-span-2">
-          <Reveal>
-            <p className="section-kicker">06 / Credentials</p>
-            <h2 className="section-title mt-3">
-              Verified <span className="text-gradient">foundations.</span>
-            </h2>
-          </Reveal>
-
-          <Stagger className="mt-10 space-y-4" staggerChildren={0.1}>
-            {certificates.map((cert) => (
-              <motion.div
-                key={cert.title}
-                variants={staggerItem}
-                whileHover={{ y: -3 }}
-                className="rounded-2xl border border-white/10 bg-[#070d18] p-5 flex items-center gap-4 hover:border-accent/30 transition-colors"
-              >
-                <div className="h-11 w-11 shrink-0 rounded-xl bg-accent/10 grid place-items-center text-accent">
-                  <Award size={20} />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-sm">{cert.title}</h3>
-                  <p className="text-text-muted text-xs mt-0.5">{cert.issuer}</p>
-                </div>
-              </motion.div>
-            ))}
-          </Stagger>
+        <div className="grid gap-x-14 gap-y-3 sm:grid-cols-[10rem_1fr]">
+          <h3 className="font-mono text-xs uppercase tracking-[0.12em] text-faint sm:pt-1">
+            Languages
+          </h3>
+          <p className="text-[15px]">
+            {languages.map((l) => `${l.name} (${l.level})`).join(", ")}
+          </p>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

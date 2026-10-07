@@ -1,43 +1,50 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
-import { Mail, Send, CheckCircle2, XCircle } from "lucide-react";
 import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import Section from "../components/Section";
 import { personal } from "../data/portfolioData";
-import Reveal from "../components/Reveal";
 
 // EmailJS is optional. Without environment keys, the form opens the
-// visitor's email client with all fields pre-filled.
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+// visitor's email client with everything pre-filled.
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID?.trim();
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID?.trim();
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY?.trim();
+
+const emailjsReady =
+  Boolean(EMAILJS_SERVICE_ID) &&
+  Boolean(EMAILJS_TEMPLATE_ID) &&
+  Boolean(EMAILJS_PUBLIC_KEY);
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const socials = [
   { icon: FaGithub, href: personal.github, label: "GitHub" },
   { icon: FaLinkedin, href: personal.linkedin, label: "LinkedIn" },
   { icon: FaWhatsapp, href: personal.whatsapp, label: "WhatsApp" },
-  { icon: Mail, href: `mailto:${personal.email}`, label: "Email" },
 ];
 
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  message: "",
+  // Honeypot: hidden from humans, irresistible to bots.
+  company: "",
+};
+
 export default function Contact() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [toast, setToast] = useState(null);
 
   const validate = () => {
     const next = {};
-    if (!form.name.trim()) next.name = "Please enter your name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      next.email = "Enter a valid email address.";
-    if (!form.subject.trim()) next.subject = "Please add a subject.";
+    if (!form.name.trim()) next.name = "Please add your name.";
+    if (!EMAIL_RE.test(form.email.trim()))
+      next.email = "That email doesn't look right.";
     if (form.message.trim().length < 10)
-      next.message = "Message should be at least 10 characters.";
+      next.message = "A little more detail, please.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -49,104 +56,130 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Honeypot tripped — a bot filled the hidden field. Bail out quietly
+    // with a success message so the bot doesn't learn it was blocked.
+    if (form.company.trim()) {
+      setForm(EMPTY_FORM);
+      showToast("success", "Message sent.");
+      return;
+    }
+
     if (!validate()) return;
 
     setStatus("sending");
     try {
-      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-        const subject = encodeURIComponent(form.subject);
+      if (!emailjsReady) {
+        const subject = encodeURIComponent(`Portfolio enquiry from ${form.name}`);
         const body = encodeURIComponent(
-          `${form.message}\n\nFrom: ${form.name} (${form.email})`,
+          `${form.message}\n\n— ${form.name} (${form.email})`,
         );
         window.location.href = `mailto:${personal.email}?subject=${subject}&body=${body}`;
         setStatus("success");
-        showToast("success", "Your email app is ready with the message.");
+        showToast("success", "Opening your email app — hit send there.");
+        setForm(EMPTY_FORM);
+        setErrors({});
         return;
       }
+
       await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
+          title: `Portfolio enquiry from ${form.name}`,
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          time: new Date().toLocaleString("en-GB", {
+            dateStyle: "full",
+            timeStyle: "short",
+          }),
           from_name: form.name,
           from_email: form.email,
-          subject: form.subject,
-          message: form.message,
+          reply_to: form.email,
+          to_email: personal.email,
         },
-        EMAILJS_PUBLIC_KEY,
+        { publicKey: EMAILJS_PUBLIC_KEY },
       );
       setStatus("success");
-      showToast("success", "Message sent — thanks for reaching out!");
-      setForm({ name: "", email: "", subject: "", message: "" });
-    } catch {
+      showToast("success", "Message sent. I'll get back to you soon.");
+      setForm(EMPTY_FORM);
+      setErrors({});
+    } catch (err) {
+      console.error("Contact form failed:", err);
       setStatus("error");
-      showToast(
-        "error",
-        "Couldn't send right now — email me directly instead.",
-      );
+      showToast("error", "That didn't go through — try emailing me directly.");
     } finally {
       setTimeout(() => setStatus("idle"), 2000);
     }
   };
 
   const inputClass = (field) =>
-    `w-full rounded-xl bg-white/5 border px-4 py-3 text-sm placeholder:text-text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors ${
-      errors[field]
-        ? "border-red-500/60"
-        : "border-white/10 focus:border-primary/40"
+    `w-full border-b bg-transparent px-0 py-2.5 text-[15px] placeholder:text-faint focus:outline-none transition-colors ${
+      errors[field] ? "border-red-500/60" : "border-border focus:border-accent"
     }`;
 
-  return (
-    <section id="contact" className="relative py-28 px-6">
-      <div className="max-w-6xl mx-auto">
-        <Reveal className="grid gap-6 md:grid-cols-[1fr_0.7fr] md:items-end">
-          <div>
-            <p className="section-kicker">07 / Contact</p>
-            <h2 className="section-title mt-3">
-              Have a problem worth{" "}
-              <span className="text-gradient">solving?</span>
-            </h2>
-          </div>
-          <p className="max-w-md text-sm leading-7 text-text-muted md:justify-self-end">
-            I'm open to full-time roles and thoughtful collaborations. Tell me
-            what you're building and where I can help.
-          </p>
-        </Reveal>
+  const buttonLabel = {
+    idle: "Send message",
+    sending: "Sending…",
+    success: "Sent",
+    error: "Try again",
+  }[status];
 
-        <div className="mt-14 grid overflow-hidden rounded-3xl border border-white/10 bg-[#070d18] lg:grid-cols-5">
-          <Reveal
-            delay={0.1}
-            className="relative lg:col-span-2 space-y-4 border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r"
-          >
-            <div className="mb-8">
-              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/8 px-3 py-1.5 font-mono text-[10px] text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />{" "}
-                Available for opportunities
-              </span>
-            </div>
-            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
-                Email
-              </p>
-              <a
-                href={`mailto:${personal.email}`}
-                className="mt-2 block text-sm hover:text-primary transition-colors"
-              >
-                {personal.email}
-              </a>
-            </div>
-            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
-                Phone
-              </p>
-              <p className="mt-2 text-sm">{personal.phone}</p>
-            </div>
-            <div className="rounded-xl border border-white/8 bg-white/2.5 p-5">
-              <p className="text-xs font-mono text-secondary uppercase tracking-wider">
-                Location
-              </p>
-              <p className="mt-2 text-sm">{personal.location}</p>
-            </div>
-            <div className="flex gap-3">
+  const fieldProps = (field) => ({
+    id: `contact-${field}`,
+    "aria-invalid": errors[field] ? true : undefined,
+    "aria-describedby": errors[field] ? `contact-${field}-error` : undefined,
+  });
+
+  const FieldError = ({ field }) =>
+    errors[field] ? (
+      <p
+        id={`contact-${field}-error`}
+        role="alert"
+        className="mt-1.5 text-xs text-red-400"
+      >
+        {errors[field]}
+      </p>
+    ) : null;
+
+  return (
+    <Section
+      id="contact"
+      index="06"
+      label="Contact"
+      title="Say hello"
+      intro="I'm open to full-time roles and to freelance work I can do well. Tell me what you're building and I'll reply as soon as I can."
+    >
+      <div className="grid gap-x-14 gap-y-14 sm:grid-cols-[1fr_1.6fr]">
+        <div className="space-y-7 text-sm">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+              Email
+            </p>
+            <a
+              href={`mailto:${personal.email}`}
+              className="u-link mt-1 inline-block [overflow-wrap:anywhere] transition-colors hover:text-accent"
+            >
+              {personal.email}
+            </a>
+          </div>
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+              Phone
+            </p>
+            <a
+              href={`tel:${personal.phone.replace(/[^+\d]/g, "")}`}
+              className="u-link mt-1 inline-block transition-colors hover:text-accent"
+            >
+              {personal.phone}
+            </a>
+          </div>
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+              Elsewhere
+            </p>
+            <div className="mt-2 flex items-center gap-4">
               {socials.map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
@@ -154,124 +187,118 @@ export default function Contact() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="h-11 w-11 grid place-items-center rounded-xl border border-white/10 bg-white/2.5 text-text-muted hover:text-primary hover:border-primary/40 transition-colors"
+                  className="text-muted transition-colors hover:text-accent"
                 >
                   <Icon size={17} />
                 </a>
               ))}
             </div>
-          </Reveal>
-
-          <Reveal delay={0.2} className="lg:col-span-3">
-            <form
-              onSubmit={handleSubmit}
-              className="p-6 sm:p-10 space-y-5"
-              noValidate
-            >
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="text-xs font-mono text-text-muted">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    autoComplete="name"
-                    className={`mt-1.5 ${inputClass("name")}`}
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Your name"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-xs text-red-400">{errors.name}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs font-mono text-text-muted">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    className={`mt-1.5 ${inputClass("email")}`}
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
-                    placeholder="you@example.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-xs text-red-400">{errors.email}</p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-mono text-text-muted">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  name="subject"
-                  className={`mt-1.5 ${inputClass("subject")}`}
-                  value={form.subject}
-                  onChange={(e) =>
-                    setForm({ ...form, subject: e.target.value })
-                  }
-                  placeholder="What's this about?"
-                />
-                {errors.subject && (
-                  <p className="mt-1 text-xs text-red-400">{errors.subject}</p>
-                )}
-              </div>
-              <div>
-                <label className="text-xs font-mono text-text-muted">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  rows={5}
-                  className={`mt-1.5 resize-none ${inputClass("message")}`}
-                  value={form.message}
-                  onChange={(e) =>
-                    setForm({ ...form, message: e.target.value })
-                  }
-                  placeholder="Tell me a bit about the opportunity or project…"
-                />
-                {errors.message && (
-                  <p className="mt-1 text-xs text-red-400">{errors.message}</p>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={status === "sending"}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:hover:translate-y-0"
-              >
-                <Send size={15} />
-                {status === "sending" ? "Sending…" : "Send Message"}
-              </button>
-            </form>
-          </Reveal>
+          </div>
         </div>
+
+        <form onSubmit={handleSubmit} className="min-w-0 max-w-xl space-y-7" noValidate>
+          {/* Honeypot — visually hidden, skipped by keyboard/screen readers */}
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="contact-company">Company (leave empty)</label>
+            <input
+              id="contact-company"
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.company}
+              onChange={(e) => setForm({ ...form, company: e.target.value })}
+            />
+          </div>
+
+          <div className="grid gap-7 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="contact-name"
+                className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                autoComplete="name"
+                placeholder="Your name"
+                className={`mt-1 ${inputClass("name")}`}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                {...fieldProps("name")}
+              />
+              <FieldError field="name" />
+            </div>
+            <div>
+              <label
+                htmlFor="contact-email"
+                className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                className={`mt-1 ${inputClass("email")}`}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                {...fieldProps("email")}
+              />
+              <FieldError field="email" />
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="contact-message"
+              className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint"
+            >
+              Message
+            </label>
+            <textarea
+              name="message"
+              rows={5}
+              placeholder="What are you working on?"
+              className={`mt-1 resize-none ${inputClass("message")}`}
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              {...fieldProps("message")}
+            />
+            <FieldError field="message" />
+          </div>
+
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            aria-live="polite"
+            className="group inline-flex items-center gap-2 text-sm text-accent disabled:opacity-50"
+          >
+            <span className="u-link">{buttonLabel}</span>
+            <span className="transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
+          </button>
+        </form>
       </div>
 
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: 20, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-8 left-1/2 z-50 glass rounded-full px-5 py-3 flex items-center gap-2 text-sm shadow-xl"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 border border-border bg-surface px-4 py-2.5 text-sm shadow-lg"
           >
-            {toast.type === "success" ? (
-              <CheckCircle2 size={16} className="text-secondary" />
-            ) : (
-              <XCircle size={16} className="text-red-400" />
-            )}
             {toast.text}
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </Section>
   );
 }

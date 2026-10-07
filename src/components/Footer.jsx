@@ -2,11 +2,39 @@ import { personal } from "../data/portfolioData";
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-white/10 py-8 px-6">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-        <p className="flex items-center gap-2 font-display font-semibold text-text"><span className="grid h-7 w-7 place-items-center rounded-full bg-white text-[9px] text-bg">MR</span>
-          Murashi<span className="text-gradient">.dev</span></p>
-        <p>&copy; {new Date().getFullYear()} {personal.name}. Designed and built with React.</p>
+    <footer className="border-t border-border">
+      <div className="mx-auto max-w-5xl px-6 py-12">
+        <p className="display text-2xl sm:text-3xl">
+          Let's build something worth keeping.
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 border-t border-border pt-6 font-mono text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Muhamad Rafli Shidiq</p>
+          <div className="flex items-center gap-5">
+            <a
+              href={personal.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-muted"
+            >
+              GitHub
+            </a>
+            <a
+              href={personal.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-muted"
+            >
+              LinkedIn
+            </a>
+            <a
+              href={`mailto:${personal.email}`}
+              className="transition-colors hover:text-muted"
+            >
+              Email
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

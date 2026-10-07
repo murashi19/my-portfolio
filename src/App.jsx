@@ -1,55 +1,48 @@
-import { Helmet } from "react-helmet-async";
+import { lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import CursorGlow from "./components/CursorGlow";
-import ScrollProgress from "./components/ScrollProgress";
 import Hero from "./sections/Hero";
-import About from "./sections/About";
-import Skills from "./sections/Skills";
-import TechStack from "./sections/TechStack";
-import Experience from "./sections/Experience";
-import Projects from "./sections/Projects";
-import Education from "./sections/Education";
-import Stats from "./sections/Stats";
-import Contact from "./sections/Contact";
-import { personal } from "./data/portfolioData";
 import { useLenis } from "./hooks/useLenis";
+
+// Hero renders eagerly (above the fold). Everything below is split into
+// its own chunk so the initial payload stays small.
+const About = lazy(() => import("./sections/About"));
+const Skills = lazy(() => import("./sections/Skills"));
+const Experience = lazy(() => import("./sections/Experience"));
+const Projects = lazy(() => import("./sections/Projects"));
+const Education = lazy(() => import("./sections/Education"));
+const Contact = lazy(() => import("./sections/Contact"));
 
 export default function App() {
   useLenis();
 
   return (
-    <div className="relative bg-noise">
-      <Helmet>
-        <title>{`${personal.name} — Full Stack Developer`}</title>
-        <meta
-          name="description"
-          content={personal.summary}
-        />
-        <meta property="og:title" content={`${personal.name} — Full Stack Developer`} />
-        <meta property="og:description" content={personal.objective} />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content={personal.avatar} />
-        <meta name="theme-color" content="#030712" />
-      </Helmet>
-
-      <ScrollProgress />
-      <CursorGlow />
+    <>
       <Navbar />
 
       <main>
         <Hero />
-        <About />
-        <Skills />
-        <TechStack />
-        <Experience />
-        <Projects />
-        <Education />
-        <Stats />
-        <Contact />
+        <Suspense fallback={null}>
+          <About />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Skills />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Experience />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Projects />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Education />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Contact />
+        </Suspense>
       </main>
 
       <Footer />
-    </div>
+    </>
   );
 }
