@@ -77,6 +77,41 @@ section[id] {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Hero backdrop: a faint dot grid that fades toward the edges, plus a
+ * single soft accent glow. Scoped to the hero so the rest of the page
+ * stays clean. Opacity is intentionally low — texture, not decoration.
+ */
+.hero-bg {
+  position: relative;
+  isolation: isolate;
+}
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(241, 239, 234, 0.075) 1px,
+    transparent 1.1px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(125% 90% at 50% 0%, #000 0%, transparent 74%);
+  mask-image: radial-gradient(125% 90% at 50% 0%, #000 0%, transparent 74%);
+}
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(600px circle at 80% 4%, rgba(255, 107, 74, 0.1), transparent 62%),
+    radial-gradient(900px circle at 12% 100%, rgba(255, 107, 74, 0.05), transparent 60%);
+}
+
 /* Inline link whose underline draws in on hover. */
 .u-link {
   position: relative;

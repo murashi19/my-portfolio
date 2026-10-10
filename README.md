@@ -102,6 +102,8 @@ without an image.
 ```
 src/
 ├── components/       Navbar, Footer, Section (shared section frame)
+│   └── ui/           shadcn-style primitives (text-scanner)
+├── lib/              utils.js — the `cn` class-merge helper
 ├── data/             portfolioData.js — single source of truth for all content
 ├── hooks/            useActiveSection, useLenis
 ├── sections/         Hero, About, Skills, Experience, Projects,
@@ -109,6 +111,21 @@ src/
 ├── App.jsx            composes all sections (Hero eager, rest lazy-loaded)
 └── main.jsx           app entry point
 ```
+
+### shadcn conventions
+
+The project follows shadcn's folder layout so registry components can be
+pasted in without edits:
+
+- `src/components/ui/` — primitive components
+- `src/lib/utils.js` — the `cn` helper (`clsx` + `tailwind-merge`)
+- `@/*` path alias — declared in `jsconfig.json`, resolved in
+  `vite.config.js`. **Both are required**: the alias must exist in the Vite
+  config or imports like `@/lib/utils` fail at build time.
+
+This is a JavaScript project (no `tsconfig.json`), so components are added
+as `.jsx`. To adopt TypeScript, run `npm i -D typescript` and rename
+`jsconfig.json` to `tsconfig.json`.
 
 ## Design system
 

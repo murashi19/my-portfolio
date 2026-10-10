@@ -1,6 +1,7 @@
 import { Mail, MapPin } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { personal } from "../data/portfolioData";
+import { TextScanner } from "../components/ui/text-scanner";
 
 const links = [
   { icon: FaGithub, href: personal.github, label: "GitHub" },
@@ -10,10 +11,16 @@ const links = [
 
 export default function Hero() {
   return (
-    <section id="hero" className="pt-14">
+    <section id="hero" className="hero-bg pt-14">
       <div className="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
         <div className="flex items-center justify-between border-b border-border pb-4 font-mono text-xs uppercase tracking-[0.14em] text-faint">
-          <span>{personal.role}</span>
+          <TextScanner
+            text={personal.role}
+            inkColor="var(--color-muted)"
+            duration={3}
+            glow={6}
+            className="font-medium tracking-[0.14em]"
+          />
           <span className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             {personal.location}
